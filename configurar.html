@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔧 Configurar Usuario</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🔧 Configuración Personal</h1>
+
+  <form id="formConfig">
+    <input type="tel" id="telefono" placeholder="Tu teléfono actual" required />
+    <button type="submit">Ver mis reservas</button>
+  </form>
+
+  <div id="resumen"></div>
+  <br><a href="index.html">← Volver al inicio</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.min.js"></script>
+  <script>
+    const client = window.supabase.createClient(
+      "https://zwdhycmuoueftlnnxaxe.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZGh5Y211b3VlZnRsbm54YXhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjc4MjUsImV4cCI6MjA2NTcwMzgyNX0.b6H1w4CxGpB_6qVfdnO397aesUouN1icYiBU0g_ttj8"
+    );
+    window.supabase = client;
+  </script>
+
+  <script>
+    const form = document.getElementById("formConfig");
+    const resumen = document.getElementById("resumen");
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const tel = document.getElementById("telefono").value.trim();
+      resumen.innerHTML = "";
+
+      const { data: reservas, error } = await supabase
+        .from("reservas")
+        .select("fecha, clase_id, nombre, telefono, clases(hora, nombre, dia)")
+        .eq("telefono", tel);
+
+      if (error || !reservas.length) {
+        resumen.innerHTML = "<p>⚠️ No se encontraron reservas.</p>";
+        return;
+      }
+
+      let html = "<h3>📋 Tus reservas:</h3><ul>";
+      reservas.forEach(r => {
+        const clase = r.clases;
+        html += `<li><b>${clase.nombre}</b> - ${clase.dia} a las ${clase.hora} (${r.fecha})</li>`;
+      });
+      html += "</ul>";
+
+      resumen.innerHTML = html;
+    });
+  </script>
+</body>
+</html>

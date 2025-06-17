@@ -3,30 +3,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Reservar Clase - Machi Moods</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Machi Moods - Sistema de Turnos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8f0;
+      color: #333;
+      margin: 0;
+      padding: 2em;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    .btn {
+      display: block;
+      margin: 1em auto;
+      padding: 1em 2em;
+      background-color: #ff9aa2;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1em;
+      max-width: 300px;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #f67280;
+    }
+  </style>
 </head>
 <body>
-  <h1>Reservar Clase</h1>
-  <div>
-    <label for="clase">Clase:</label>
-    <select id="clase"></select>
-  </div>
-  <div>
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" />
-  </div>
-  <div>
-    <label for="telefono">Teléfono:</label>
-    <input type="text" id="telefono" />
-  </div>
-  <div>
-    <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" />
-  </div>
-  <button onclick="reservar()">Reservar</button>
-  <p id="mensaje"></p>
-
-  <script src="app.js"></script>
+  <h1>🌸 Machi Moods - Sistema de Turnos</h1>
+  <a class="btn" href="usuario.html">📅 Reservar clase</a>
+  <a class="btn" href="admin.html">⚙️ Agregar clase</a>
+  <a class="btn" href="reservas.html">📋 Ver todas las reservas</a>
+  <a class="btn" href="reservas_clase.html">🔍 Ver reservas por clase</a>
 </body>
 </html>

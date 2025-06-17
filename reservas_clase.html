@@ -1,96 +1,164 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Reservas por Clase</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    select, button { padding: 6px; margin: 10px 0; }
-    .reserva { padding: 6px; background: #f0f0f0; margin-bottom: 4px; border: 1px solid #ccc; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fffdf8;
+      color: #333;
+      padding: 2rem;
+      text-align: center;
+    }
+    select {
+      font-size: 1rem;
+      padding: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #f3d9ff;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .volver {
+      display: inline-block;
+      margin-top: 1.5rem;
+      background: #e6c6f0;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #4a3a67;
+    }
   </style>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header>
-  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
-  <h1>HORARIOS MACHI MOODS</h1>
-  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
-</header>
-
-<h1>🔍 Ver reservas por clase</h1>
-
-<label for="dia">Día:</label>
-<select id="dia">
-  <option value="lunes">Lunes</option>
-  <option value="martes">Martes</option>
-  <option value="miércoles">Miércoles</option>
-  <option value="jueves">Jueves</option>
-  <option value="viernes">Viernes</option>
-  <option value="sábado">Sábado</option>
-</select>
-
-<label for="clase">Clase:</label>
-<select id="clase"></select>
-
-<button onclick="mostrarReservas()">Ver reservas</button>
-
-<h2 id="tituloClase"></h2>
-<div id="resultado"></div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const clases = JSON.parse(localStorage.getItem("clases") || "{}");
-const reservas = JSON.parse(localStorage.getItem("reservas") || "{}");
-
-const diaSelect = document.getElementById("dia");
-const claseSelect = document.getElementById("clase");
-const resultado = document.getElementById("resultado");
-const tituloClase = document.getElementById("tituloClase");
-
-diaSelect.addEventListener("change", actualizarClases);
-document.addEventListener("DOMContentLoaded", actualizarClases);
-
-function actualizarClases() {
-  const dia = diaSelect.value;
-  claseSelect.innerHTML = "";
-  if (!clases[dia]) return;
-  clases[dia].forEach((c, i) => {
-    const op = document.createElement("option");
-    op.value = i;
-    op.textContent = `${c.hora} - ${c.nombre}`;
-    claseSelect.appendChild(op);
-  });
-}
-
-function mostrarReservas() {
-  const dia = diaSelect.value;
-  const index = claseSelect.value;
-  const clave = `${dia}_${index}`;
-  const lista = reservas[clave] || [];
-  const clase = clases[dia]?.[index];
-
-  tituloClase.textContent = clase ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${clase.hora} - ${clase.nombre}` : "Clase no encontrada";
-  resultado.innerHTML = "";
-
-  if (lista.length === 0) {
-    resultado.innerHTML = "<p>No hay reservas.</p>";
-    return;
-  }
-
-  const resumen = document.createElement("p");
-  resumen.textContent = `Total de reservas: ${lista.length} / ${clase?.cupo || "?"}`;
-  resultado.appendChild(resumen);
-
-  lista.forEach(r => {
-    const div = document.createElement("div");
-    div.className = "reserva";
-    div.textContent = `👤 ${r.nombre} | 📞 ${r.tel}`;
-    resultado.appendChild(div);
-  });
-}
+  const supabase = window.supabase.createClient(
+    "https://zwdhycmuoueftlnnxaxe.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZGh5Y211b3VlZnRsbm54YXhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjc4MjUsImV4cCI6MjA2NTcwMzgyNX0.b6H1w4CxGpB_6qVfdnO397aesUouN1icYiBU0g_ttj8"
+  );
 </script>
+</head>
 
-<p><a href="index.html">🏠 Volver al inicio</a></p>
+<body style="max-width: 600px; margin: auto; padding: 1rem;">
+<a href="index.html"><img src="logo_machi.png" alt="Machi Moods" style="height: 100px; margin-bottom: 1rem;"></a>
+
+  <h1>🔍 Ver Reservas por Clase</h1>
+
+  <select id="diaSelect">
+    <option value="">Seleccionar día</option>
+  </select>
+  <select id="claseSelect" disabled>
+    <option value="">Seleccionar clase</option>
+  </select>
+
+  <h3 id="infoCupo"></h3>
+  <ul id="listaReservas"></ul>
+
+  <button aria-label="Acción del botón" onclick="exportarCSV()" disabled id="btnExportar">⬇️ Exportar CSV</button>
+  <br><br>
+  <a href="index.html">← Volver al inicio</a>
+
+  <script>
+    const dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+    const diaSelect = document.getElementById("diaSelect");
+    const claseSelect = document.getElementById("claseSelect");
+    const lista = document.getElementById("listaReservas");
+    const infoCupo = document.getElementById("infoCupo");
+    const btnExportar = document.getElementById("btnExportar");
+
+    let reservasActuales = [];
+
+    dias.forEach(d => {
+      const option = document.createElement("option");
+      option.value = d;
+      option.textContent = d.charAt(0).toUpperCase() + d.slice(1);
+      diaSelect.appendChild(option);
+    });
+
+    diaSelect.addEventListener("change", async () => {
+      claseSelect.innerHTML = '<option value="">Seleccionar clase</option>';
+      claseSelect.disabled = true;
+      lista.innerHTML = "";
+      infoCupo.textContent = "";
+      btnExportar.disabled = true;
+
+      if (!diaSelect.value) return;
+
+      const { data } = await supabase
+        .from("clases")
+        .select()
+        .eq("dia", diaSelect.value)
+        .order("hora");
+
+      data.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = `${c.hora} - ${c.nombre}`;
+        claseSelect.appendChild(opt);
+      });
+
+      claseSelect.disabled = false;
+    });
+
+    claseSelect.addEventListener("change", async () => {
+      lista.innerHTML = "";
+      infoCupo.textContent = "";
+      btnExportar.disabled = true;
+      reservasActuales = [];
+
+      if (!claseSelect.value) return;
+
+      const { data: clase } = await supabase
+        .from("clases")
+        .select()
+        .eq("id", claseSelect.value)
+        .single();
+
+      const { data: reservas } = await supabase
+        .from("reservas")
+        .select()
+        .eq("clase_id", clase.id);
+
+      reservasActuales = reservas;
+
+      infoCupo.textContent = `📌 ${reservas.length} de ${clase.cupo} cupos reservados`;
+
+      reservas.forEach(r => {
+        const li = document.createElement("li");
+        li.textContent = `${r.nombre} (${r.telefono})`;
+        lista.appendChild(li);
+      });
+
+      btnExportar.disabled = false;
+    });
+
+    function exportarCSV() {
+      const csv = ["Nombre,Teléfono"];
+      reservasActuales.forEach(r => {
+        csv.push(`"${r.nombre}","${r.telefono}"`);
+      });
+      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "reservas_clase.csv";
+      link.click();
+    }
+  </script>
 </body>
 </html>

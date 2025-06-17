@@ -1,111 +1,163 @@
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <title>Admin Clases - Turnos</title>
+  <title>Agregar Clases</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, select, button { margin: 6px 0; padding: 6px; }
-    .clase { margin: 6px 0; padding: 6px; background: #f9f9f9; border: 1px solid #ccc; }
-  </style>
-<link rel="stylesheet" href="style.css">
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fffdf8;
+      color: #333;
+      padding: 2rem;
+      text-align: center;
+    }
+    input, select {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 0.4rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 90%;
+      max-width: 300px;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.7rem 1.5rem;
+      background-color: #f6d6ff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #e6c6f0;
+    }
+    .clase {
+      margin-bottom: 1.5rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  
+<style>
+  .volver {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: #e6c6f0;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #4a3a67;
+  }
+</style>
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://zwdhycmuoueftlnnxaxe.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZGh5Y211b3VlZnRsbm54YXhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjc4MjUsImV4cCI6MjA2NTcwMzgyNX0.b6H1w4CxGpB_6qVfdnO397aesUouN1icYiBU0g_ttj8"
+  );
+</script>
 </head>
-<body>
 
-<header>
-  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
-  <h1>HORARIOS MACHI MOODS</h1>
-  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
-</header>
+<body style="max-width: 600px; margin: auto; padding: 1rem;">
+<a href="index.html"><img src="logo_machi.png" alt="Machi Moods" style="height: 100px; margin-bottom: 1rem;"></a>
 
-<h1>Panel Admin - Cargar Clases</h1>
+  <h1>Agregar Clases</h1>
 
-<script>
-if (!localStorage.getItem("clases")) {
-  const clasesPredefinidas = {"lunes": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "20:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "martes": [{"hora": "08:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:30", "nombre": "Yoga terapéutico", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino", "cupo": 30}], "miércoles": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}, {"hora": "16:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "20:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "jueves": [{"hora": "08:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:30", "nombre": "Yoga terapéutico", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "viernes": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}, {"hora": "16:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "sábado": [{"hora": "09:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "10:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}]};
-  localStorage.setItem("clases", JSON.stringify(clasesPredefinidas));
-}
-</script>
+  <form id="claseForm">
+    <label for="dia">Día:</label>
+<select id="dia" required>
+      <option value="">Día</option>
+      <option value="lunes">Lunes</option>
+      <option value="martes">Martes</option>
+      <option value="miércoles">Miércoles</option>
+      <option value="jueves">Jueves</option>
+      <option value="viernes">Viernes</option>
+      <option value="sábado">Sábado</option>
+    </select>
+    <input type="time" id="hora" required />
+    <input type="text" id="nombre" placeholder="Nombre clase" required />
+    <input type="number" id="cupo" placeholder="Cupo" min="1" required />
+    <button aria-label="Acción del botón" type="submit">➕ Agregar / Actualizar</button>
+  </form>
 
-<label>Día:</label>
-<select id="diaClase">
-  <option value="lunes">Lunes</option><option value="martes">Martes</option>
-  <option value="miércoles">Miércoles</option><option value="jueves">Jueves</option>
-  <option value="viernes">Viernes</option><option value="sábado">Sábado</option>
-</select><br>
+  <table>
+    <thead>
+      <tr>
+        <th>Día</th>
+        <th>Hora</th>
+        <th>Nombre</th>
+        <th>Cupo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaClases"></tbody>
+  </table>
 
-<label>Hora:</label><input type="time" id="horaClase"><br>
-<label>Clase:</label><input type="text" id="nombreClase"><br>
-<label>Cupo:</label><input type="number" id="cupoClase" value="30"><br>
-<button onclick="agregarClase()">Agregar Clase</button>
+  <br><a href="index.html">← Volver al inicio</a>
+  <div id="mensaje"></div>
 
-<h3>Clases del día</h3>
-<div id="listaClases"></div>
+  <script>
+    const form = document.getElementById("claseForm");
+    const tabla = document.getElementById("tablaClases");
+    const mensaje = document.getElementById("mensaje");
 
-<script>
-const storage = { clases: JSON.parse(localStorage.getItem("clases") || "{}") };
+    async function cargarClases() {
+      const { data } = await supabase.from("clases").select("*").order("dia").order("hora");
+      tabla.innerHTML = "";
+      data.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${c.dia}</td>
+          <td>${c.hora}</td>
+          <td>${c.nombre}</td>
+          <td>${c.cupo}</td>
+          <td>
+            <button aria-label="Acción del botón" onclick="editar(${c.id})">✏️</button>
+            <button aria-label="Acción del botón" onclick="eliminar(${c.id})">🗑️</button>
+          </td>
+        `;
+        tabla.appendChild(tr);
+      });
+    }
 
-function guardarClases() {
-  localStorage.setItem("clases", JSON.stringify(storage.clases));
-  cargarClases();
-}
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const dia = form.dia.value;
+      const hora = form.hora.value;
+      const nombre = form.nombre.value.trim();
+      const cupo = parseInt(form.cupo.value);
 
-function agregarClase() {
-  const dia = document.getElementById("diaClase").value;
-  const hora = document.getElementById("horaClase").value;
-  const nombre = document.getElementById("nombreClase").value;
-  const cupo = parseInt(document.getElementById("cupoClase").value);
-  if (!hora || !nombre || !cupo) return alert("Faltan datos");
-  if (!storage.clases[dia]) storage.clases[dia] = [];
-  storage.clases[dia].push({ hora, nombre, cupo });
-  guardarClases();
-}
+      const { data, error } = await supabase
+        .from("clases")
+        .upsert({ dia, hora, nombre, cupo }, { onConflict: ["dia", "hora", "nombre"] });
 
-function cargarClases() {
-  const dia = document.getElementById("diaClase").value;
-  const lista = document.getElementById("listaClases");
-  lista.innerHTML = "";
-  (storage.clases[dia] || []).forEach((c, i) => {
-    const div = document.createElement("div");
-    div.className = "clase";
-    div.textContent = `${c.hora} - ${c.nombre} (Cupo: ${c.cupo})`;
-    const btn = document.createElement("button");
-    btn.textContent = "❌";
-    btn.onclick = () => { storage.clases[dia].splice(i, 1); guardarClases(); };
-    div.appendChild(btn);
-    lista.appendChild(div);
-  });
-}
-
-document.getElementById("diaClase").addEventListener("change", cargarClases);
-cargarClases();
-</script>
-
-
-<h3>Vista completa de todas las clases</h3>
-<div id="vistaCompleta"></div>
-<script>
-function mostrarTodasLasClases() {
-  const salida = document.getElementById("vistaCompleta");
-  salida.innerHTML = "";
-  const dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-  dias.forEach(dia => {
-    const clasesDia = storage.clases[dia] || [];
-    if (clasesDia.length === 0) return;
-    const bloque = document.createElement("div");
-    bloque.innerHTML = `<h4>${dia.charAt(0).toUpperCase() + dia.slice(1)}</h4>`;
-    clasesDia.forEach((c, i) => {
-      const div = document.createElement("div");
-      div.className = "clase";
-      div.textContent = `${c.hora} - ${c.nombre} (Cupo: ${c.cupo})`;
-      bloque.appendChild(div);
+      mensaje.textContent = error ? "❌ Error al guardar." : "✅ Clase guardada.";
+      form.reset();
+      cargarClases();
     });
-    salida.appendChild(bloque);
-  });
-}
-mostrarTodasLasClases();
-</script>
 
-<p><a href="index.html">🏠 Volver al inicio</a></p>
+    async function editar(id) {
+      const { data } = await supabase.from("clases").select().eq("id", id).single();
+      form.dia.value = data.dia;
+      form.hora.value = data.hora;
+      form.nombre.value = data.nombre;
+      form.cupo.value = data.cupo;
+    }
+
+    async function eliminar(id) {
+      if (!confirm("¿Eliminar esta clase?")) return;
+      await supabase.from("clases").delete().eq("id", id);
+      mensaje.textContent = "🗑️ Clase eliminada.";
+      cargarClases();
+    }
+
+    cargarClases();
+  </script>
 </body>
 </html>

@@ -1,64 +1,142 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <title>Reservas</title>
+  <title>Reservas Totales</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .reserva { margin: 10px 0; padding: 10px; background: #f4f4f4; border: 1px solid #ccc; }
-    .dia { font-weight: bold; font-size: 1.2em; margin-top: 20px; }
-  </style>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header>
-  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
-  <h1>HORARIOS MACHI MOODS</h1>
-  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
-</header>
-
-<h1>📋 Reservas por Clase</h1>
-<div id="contenedorReservas"></div>
-
-<script>
-const reservas = JSON.parse(localStorage.getItem("reservas") || "{}");
-const clases = JSON.parse(localStorage.getItem("clases") || "{}");
-const contenedor = document.getElementById("contenedorReservas");
-
-function mostrarReservas() {
-  if (Object.keys(reservas).length === 0) {
-    contenedor.innerHTML = "<p>No hay reservas registradas.</p>";
-    return;
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fffdf8;
+      color: #333;
+      padding: 2rem;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f3d9ff;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #e6c6f0;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  
+<style>
+  .volver {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: #e6c6f0;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #4a3a67;
   }
+</style>
 
-  for (const clave in reservas) {
-    const [dia, indexStr] = clave.split("_");
-    const index = parseInt(indexStr);
-    const clase = (clases[dia] && clases[dia][index]) ? clases[dia][index] : null;
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://zwdhycmuoueftlnnxaxe.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp3ZGh5Y211b3VlZnRsbm54YXhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMjc4MjUsImV4cCI6MjA2NTcwMzgyNX0.b6H1w4CxGpB_6qVfdnO397aesUouN1icYiBU0g_ttj8"
+  );
+</script>
+</head>
 
-    const titulo = clase 
-      ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${clase.hora} - ${clase.nombre}` 
-      : `${clave} (Clase no encontrada)`;
+<body style="max-width: 600px; margin: auto; padding: 1rem;">
+<a href="index.html"><img src="logo_machi.png" alt="Machi Moods" style="height: 100px; margin-bottom: 1rem;"></a>
 
-    const bloque = document.createElement("div");
-    bloque.innerHTML = `<div class="dia">${titulo}</div>`;
+  <h1>📋 Todas las Reservas</h1>
+  <input type="text" id="buscar" placeholder="Buscar por nombre o teléfono..." />
 
-    reservas[clave].forEach(r => {
-      const div = document.createElement("div");
-      div.className = "reserva";
-      div.textContent = `👤 ${r.nombre} | 📞 ${r.tel}`;
-      bloque.appendChild(div);
+  <table id="tablaReservas">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Teléfono</th>
+        <th>Día</th>
+        <th>Hora</th>
+        <th>Clase</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button aria-label="Acción del botón" onclick="exportarCSV()">⬇️ Exportar CSV</button>
+  <br><br>
+  <a href="index.html">← Volver al inicio</a>
+
+  <script>
+    let datosGlobales = [];
+
+    async function cargarReservas() {
+      const { data, error } = await supabase
+        .from("reservas_detalle")
+        .select("*")
+        .order("dia")
+        .order("hora");
+
+      if (error) return alert("Error al cargar reservas");
+      datosGlobales = data;
+      mostrarDatos(data);
+    }
+
+    function mostrarDatos(data) {
+      const tbody = document.querySelector("#tablaReservas tbody");
+      tbody.innerHTML = "";
+      data.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.nombre}</td>
+          <td>${r.telefono}</td>
+          <td>${r.dia}</td>
+          <td>${r.hora}</td>
+          <td>${r.nombre_clase}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("buscar").addEventListener("input", e => {
+      const filtro = e.target.value.toLowerCase();
+      const filtrados = datosGlobales.filter(r =>
+        r.nombre.toLowerCase().includes(filtro) ||
+        r.telefono.toLowerCase().includes(filtro)
+      );
+      mostrarDatos(filtrados);
     });
 
-    contenedor.appendChild(bloque);
-  }
-}
+    function exportarCSV() {
+      const csv = ["Nombre,Teléfono,Día,Hora,Clase"];
+      datosGlobales.forEach(r => {
+        csv.push(`"${r.nombre}","${r.telefono}","${r.dia}","${r.hora}","${r.nombre_clase}"`);
+      });
+      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "reservas.csv";
+      link.click();
+    }
 
-mostrarReservas();
-</script>
-
-<p><a href="index.html">🏠 Volver al inicio</a></p>
+    cargarReservas();
+  </script>
 </body>
 </html>
