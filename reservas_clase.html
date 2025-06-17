@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservas por Clase</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    select, button { padding: 6px; margin: 10px 0; }
+    .reserva { padding: 6px; background: #f0f0f0; margin-bottom: 4px; border: 1px solid #ccc; }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
+  <h1>HORARIOS MACHI MOODS</h1>
+  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
+</header>
+
+<h1>🔍 Ver reservas por clase</h1>
+
+<label for="dia">Día:</label>
+<select id="dia">
+  <option value="lunes">Lunes</option>
+  <option value="martes">Martes</option>
+  <option value="miércoles">Miércoles</option>
+  <option value="jueves">Jueves</option>
+  <option value="viernes">Viernes</option>
+  <option value="sábado">Sábado</option>
+</select>
+
+<label for="clase">Clase:</label>
+<select id="clase"></select>
+
+<button onclick="mostrarReservas()">Ver reservas</button>
+
+<h2 id="tituloClase"></h2>
+<div id="resultado"></div>
+
+<script>
+const clases = JSON.parse(localStorage.getItem("clases") || "{}");
+const reservas = JSON.parse(localStorage.getItem("reservas") || "{}");
+
+const diaSelect = document.getElementById("dia");
+const claseSelect = document.getElementById("clase");
+const resultado = document.getElementById("resultado");
+const tituloClase = document.getElementById("tituloClase");
+
+diaSelect.addEventListener("change", actualizarClases);
+document.addEventListener("DOMContentLoaded", actualizarClases);
+
+function actualizarClases() {
+  const dia = diaSelect.value;
+  claseSelect.innerHTML = "";
+  if (!clases[dia]) return;
+  clases[dia].forEach((c, i) => {
+    const op = document.createElement("option");
+    op.value = i;
+    op.textContent = `${c.hora} - ${c.nombre}`;
+    claseSelect.appendChild(op);
+  });
+}
+
+function mostrarReservas() {
+  const dia = diaSelect.value;
+  const index = claseSelect.value;
+  const clave = `${dia}_${index}`;
+  const lista = reservas[clave] || [];
+  const clase = clases[dia]?.[index];
+
+  tituloClase.textContent = clase ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${clase.hora} - ${clase.nombre}` : "Clase no encontrada";
+  resultado.innerHTML = "";
+
+  if (lista.length === 0) {
+    resultado.innerHTML = "<p>No hay reservas.</p>";
+    return;
+  }
+
+  const resumen = document.createElement("p");
+  resumen.textContent = `Total de reservas: ${lista.length} / ${clase?.cupo || "?"}`;
+  resultado.appendChild(resumen);
+
+  lista.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "reserva";
+    div.textContent = `👤 ${r.nombre} | 📞 ${r.tel}`;
+    resultado.appendChild(div);
+  });
+}
+</script>
+
+<p><a href="index.html">🏠 Volver al inicio</a></p>
+</body>
+</html>

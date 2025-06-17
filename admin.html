@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Clases - Turnos</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, select, button { margin: 6px 0; padding: 6px; }
+    .clase { margin: 6px 0; padding: 6px; background: #f9f9f9; border: 1px solid #ccc; }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
+  <h1>HORARIOS MACHI MOODS</h1>
+  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
+</header>
+
+<h1>Panel Admin - Cargar Clases</h1>
+
+<script>
+if (!localStorage.getItem("clases")) {
+  const clasesPredefinidas = {"lunes": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "20:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "martes": [{"hora": "08:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:30", "nombre": "Yoga terapéutico", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino", "cupo": 30}], "miércoles": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}, {"hora": "16:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "20:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "jueves": [{"hora": "08:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "09:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "16:30", "nombre": "Yoga terapéutico", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "viernes": [{"hora": "08:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "09:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}, {"hora": "16:00", "nombre": "Hipopresivos", "cupo": 30}, {"hora": "17:00", "nombre": "Entrenamiento femenino", "cupo": 30}, {"hora": "18:00", "nombre": "Entrenamiento femenino sin impacto", "cupo": 30}, {"hora": "19:00", "nombre": "Entrenamiento funcional", "cupo": 30}], "sábado": [{"hora": "09:00", "nombre": "Entrenamiento funcional", "cupo": 30}, {"hora": "10:00", "nombre": "Stretching + Hipopresivos", "cupo": 30}]};
+  localStorage.setItem("clases", JSON.stringify(clasesPredefinidas));
+}
+</script>
+
+<label>Día:</label>
+<select id="diaClase">
+  <option value="lunes">Lunes</option><option value="martes">Martes</option>
+  <option value="miércoles">Miércoles</option><option value="jueves">Jueves</option>
+  <option value="viernes">Viernes</option><option value="sábado">Sábado</option>
+</select><br>
+
+<label>Hora:</label><input type="time" id="horaClase"><br>
+<label>Clase:</label><input type="text" id="nombreClase"><br>
+<label>Cupo:</label><input type="number" id="cupoClase" value="30"><br>
+<button onclick="agregarClase()">Agregar Clase</button>
+
+<h3>Clases del día</h3>
+<div id="listaClases"></div>
+
+<script>
+const storage = { clases: JSON.parse(localStorage.getItem("clases") || "{}") };
+
+function guardarClases() {
+  localStorage.setItem("clases", JSON.stringify(storage.clases));
+  cargarClases();
+}
+
+function agregarClase() {
+  const dia = document.getElementById("diaClase").value;
+  const hora = document.getElementById("horaClase").value;
+  const nombre = document.getElementById("nombreClase").value;
+  const cupo = parseInt(document.getElementById("cupoClase").value);
+  if (!hora || !nombre || !cupo) return alert("Faltan datos");
+  if (!storage.clases[dia]) storage.clases[dia] = [];
+  storage.clases[dia].push({ hora, nombre, cupo });
+  guardarClases();
+}
+
+function cargarClases() {
+  const dia = document.getElementById("diaClase").value;
+  const lista = document.getElementById("listaClases");
+  lista.innerHTML = "";
+  (storage.clases[dia] || []).forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "clase";
+    div.textContent = `${c.hora} - ${c.nombre} (Cupo: ${c.cupo})`;
+    const btn = document.createElement("button");
+    btn.textContent = "❌";
+    btn.onclick = () => { storage.clases[dia].splice(i, 1); guardarClases(); };
+    div.appendChild(btn);
+    lista.appendChild(div);
+  });
+}
+
+document.getElementById("diaClase").addEventListener("change", cargarClases);
+cargarClases();
+</script>
+
+
+<h3>Vista completa de todas las clases</h3>
+<div id="vistaCompleta"></div>
+<script>
+function mostrarTodasLasClases() {
+  const salida = document.getElementById("vistaCompleta");
+  salida.innerHTML = "";
+  const dias = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+  dias.forEach(dia => {
+    const clasesDia = storage.clases[dia] || [];
+    if (clasesDia.length === 0) return;
+    const bloque = document.createElement("div");
+    bloque.innerHTML = `<h4>${dia.charAt(0).toUpperCase() + dia.slice(1)}</h4>`;
+    clasesDia.forEach((c, i) => {
+      const div = document.createElement("div");
+      div.className = "clase";
+      div.textContent = `${c.hora} - ${c.nombre} (Cupo: ${c.cupo})`;
+      bloque.appendChild(div);
+    });
+    salida.appendChild(bloque);
+  });
+}
+mostrarTodasLasClases();
+</script>
+
+<p><a href="index.html">🏠 Volver al inicio</a></p>
+</body>
+</html>

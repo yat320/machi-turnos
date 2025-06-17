@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservas</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .reserva { margin: 10px 0; padding: 10px; background: #f4f4f4; border: 1px solid #ccc; }
+    .dia { font-weight: bold; font-size: 1.2em; margin-top: 20px; }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
+  <h1>HORARIOS MACHI MOODS</h1>
+  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
+</header>
+
+<h1>📋 Reservas por Clase</h1>
+<div id="contenedorReservas"></div>
+
+<script>
+const reservas = JSON.parse(localStorage.getItem("reservas") || "{}");
+const clases = JSON.parse(localStorage.getItem("clases") || "{}");
+const contenedor = document.getElementById("contenedorReservas");
+
+function mostrarReservas() {
+  if (Object.keys(reservas).length === 0) {
+    contenedor.innerHTML = "<p>No hay reservas registradas.</p>";
+    return;
+  }
+
+  for (const clave in reservas) {
+    const [dia, indexStr] = clave.split("_");
+    const index = parseInt(indexStr);
+    const clase = (clases[dia] && clases[dia][index]) ? clases[dia][index] : null;
+
+    const titulo = clase 
+      ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} ${clase.hora} - ${clase.nombre}` 
+      : `${clave} (Clase no encontrada)`;
+
+    const bloque = document.createElement("div");
+    bloque.innerHTML = `<div class="dia">${titulo}</div>`;
+
+    reservas[clave].forEach(r => {
+      const div = document.createElement("div");
+      div.className = "reserva";
+      div.textContent = `👤 ${r.nombre} | 📞 ${r.tel}`;
+      bloque.appendChild(div);
+    });
+
+    contenedor.appendChild(bloque);
+  }
+}
+
+mostrarReservas();
+</script>
+
+<p><a href="index.html">🏠 Volver al inicio</a></p>
+</body>
+</html>

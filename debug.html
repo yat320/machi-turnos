@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Depurar localStorage</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #f4f4f4; }
+    h1 { font-family: sans-serif; }
+    pre { background: #fff; padding: 10px; border: 1px solid #ccc; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Debug localStorage</h1>
+  <p>Esta página te permite ver qué hay guardado en el navegador.</p>
+
+  <h2>🗂️ Clases</h2>
+  <pre id="clases"></pre>
+
+  <h2>📋 Reservas</h2>
+  <pre id="reservas"></pre>
+
+  <h2>👤 Usuarios</h2>
+  <pre id="usuarios"></pre>
+
+  <script>
+    function mostrar(id, data) {
+      document.getElementById(id).textContent = JSON.stringify(data, null, 2);
+    }
+
+    mostrar("clases", JSON.parse(localStorage.getItem("clases") || "{}"));
+    mostrar("reservas", JSON.parse(localStorage.getItem("reservas") || "{}"));
+    mostrar("usuarios", JSON.parse(localStorage.getItem("usuarios") || "{}"));
+  </script>
+</body>
+</html>

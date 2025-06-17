@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservar Turno</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .turno { border: 1px solid #ccc; margin: 5px 0; padding: 10px; border-radius: 5px; }
+    .reservado { background: #e0ffe0; }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <img src="logo_machi.png" alt="Logo Machi Moods" style="height:80px; border-radius: 12px;">
+  <h1>HORARIOS MACHI MOODS</h1>
+  <p>AV. TEJEDOR 930 &nbsp;•&nbsp; WhatsApp: 223-3008651</p>
+</header>
+
+  <h1>Reservá tu turno</h1>
+  <input id="nombre" placeholder="Tu nombre"><br>
+  <input id="tel" placeholder="Whatsapp"><br>
+  <p id="infoTurnos"></p>
+  <label>Día:</label>
+  <select id="dia">
+    <option value="">Elegí un día</option>
+    <option value="lunes">Lunes</option><option value="martes">Martes</option>
+    <option value="miércoles">Miércoles</option><option value="jueves">Jueves</option>
+    <option value="viernes">Viernes</option><option value="sábado">Sábado</option>
+  </select>
+  <div id="turnos"></div><p><a href="index.html">🏠 Volver al inicio</a></p>
+  <script>
+    const clases = JSON.parse(localStorage.getItem("clases") || "{}");
+    const reservas = JSON.parse(localStorage.getItem("reservas") || "{}");
+    const usuarios = JSON.parse(localStorage.getItem("usuarios") || "{}");
+
+    const mesActual = new Date().toISOString().slice(0,7); // YYYY-MM
+
+    function guardar() {
+      localStorage.setItem("reservas", JSON.stringify(reservas));
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      mostrarTurnos();
+    }
+
+    function mostrarTurnos() {
+      const dia = document.getElementById("dia").value;
+      const cont = document.getElementById("turnos");
+      cont.innerHTML = "";
+
+      const nombre = document.getElementById("nombre").value.trim();
+      const tel = document.getElementById("tel").value.trim();
+      const id = tel || nombre;
+      const usado = usuarios[mesActual]?.[id]?.length || 0;
+      document.getElementById("infoTurnos").textContent = id ? `Te quedan ${3 - usado} de 3 clases este mes.` : "";
+
+      (clases[dia] || []).forEach((c, i) => {
+        const key = dia + "_" + i;
+        const r = reservas[key] || [];
+        const div = document.createElement("div");
+        div.className = "turno";
+        if (r.length >= c.cupo) div.classList.add("reservado");
+        div.innerHTML = `<strong>${c.hora}</strong> - ${c.nombre}<br>${r.length}/${c.cupo}`;
+        if (r.length < c.cupo && usado < 3) {
+          div.onclick = () => {
+            if (!nombre || !tel) return alert("Completá tus datos");
+            r.push({ nombre, tel });
+            reservas[key] = r;
+            if (!usuarios[mesActual]) usuarios[mesActual] = {};
+            if (!usuarios[mesActual][id]) usuarios[mesActual][id] = [];
+            usuarios[mesActual][id].push(key);
+            guardar();
+          };
+        } else if (usado >= 3) {
+          div.innerHTML += "<br><em>No podés reservar más este mes.</em>";
+        }
+        cont.appendChild(div);
+      });
+    }
+
+    document.getElementById("dia").addEventListener("change", mostrarTurnos);
+    document.getElementById("nombre").addEventListener("input", mostrarTurnos);
+    document.getElementById("tel").addEventListener("input", mostrarTurnos);
+  </script>
+</body>
+</html>
