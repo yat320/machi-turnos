@@ -1,36 +1,57 @@
+# 🧘‍♀️ Machi Moods - Sistema de Turnos
 
-# Machi Moods - Sistema de Turnos
+Este es un sistema web liviano y moderno para reservar clases y gestionar turnos en Machi Moods.
 
-Este es un sistema web liviano y responsive para la gestión de clases y reservas en Machi Moods.
-
-## 🌐 Acceso web
-
-👉 [https://yat320.github.io/machi-turnos/](https://yat320.github.io/machi-turnos/)
-
-## 📁 Estructura de Archivos
-
-- `index.html`: Página de inicio con navegación a todas las vistas.
-- `usuario.html`: Vista para que las personas reserven sus clases mensuales.
-- `admin.html`: Agregar nuevas clases al sistema.
-- `reservas.html`: Vista general de todas las reservas registradas.
-- `reservas_clase.html`: Consulta de reservas por clase específica.
-- `style.css`: Estilo visual inspirado en la identidad de Machi Moods.
-- `supabase.js`: Conexión con la base de datos Supabase.
-- `*.js`: Archivos organizados por funcionalidad (`usuario.js`, `admin.js`, etc.).
-
-## 🚀 Funciones principales
-
-- 📅 Reserva mensual (3 clases por persona).
-- 📋 Administración de clases con cupos.
-- 🗃️ Consulta de reservas por clase.
-- ☁️ Almacenamiento seguro en Supabase.
-
-## 🛠️ Instalación local
-
-Solo abrí `index.html` en un navegador moderno con conexión a Internet.
-
-> Para usar Supabase, asegurate de tener las credenciales correctas en `supabase.js`.
+🌐 **Sitio en línea**: [https://yat320.github.io/machi-turnos/](https://yat320.github.io/machi-turnos/)
 
 ---
 
-Diseñado con ❤️ para Machi Moods.
+## 📱 Optimizado para Móviles
+
+Esta versión está completamente adaptada a celulares:
+- Botones de ancho completo
+- Inputs grandes y legibles
+- Navegación táctil cómoda
+- Estética suave y cálida (estilo Machi Moods)
+
+---
+
+## 🗂️ Estructura del Proyecto
+
+- `index.html`: Inicio y navegación principal
+- `usuario.html`: Reservar clases (3 clases por mes)
+- `admin.html`: Agregar nuevas clases
+- `editar.html`: Modificar clases existentes
+- `eliminar.html`: Eliminar clases
+- `reservas.html`: Ver todas las reservas del mes
+- `reservas_clase.html`: Ver reservas por clase
+- `style.css`: Estilo global responsive
+- `supabase.js`: Conexión a Supabase
+
+---
+
+## 📦 Requisitos
+
+- Conexión activa a Supabase (backend configurado)
+- Subida directa a GitHub Pages desde la raíz del repositorio
+
+---
+
+## ✅ Última actualización
+
+Incluye:
+- 💅 Estilo responsive para móviles
+- 🔄 Navegación fluida entre vistas
+- 🛠️ Correcciones de errores y mejoras de usabilidad
+
+---
+
+## 🧪 Modo de uso
+
+1. Subí todos los archivos a la raíz del repositorio.
+2. Activá GitHub Pages en "Settings" > "Pages".
+3. Compartí tu sistema con alumnos o administradores desde el navegador.
+
+---
+
+Desarrollado con ❤️ para Machi Moods
