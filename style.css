@@ -64,3 +64,47 @@ th {
     width: 100%;
   }
 }
+
+
+/* --------- Mejoras para vista en celulares ----------- */
+body {
+  margin: 0;
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff8f0;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+button, input, select, a.btn {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+a.btn {
+  background-color: #ff9aa2;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+}
+
+a.btn:hover {
+  background-color: #f67280;
+}
+
+h1, h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
