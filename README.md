@@ -2,7 +2,7 @@
 
 Este es un sistema web liviano para reservar clases y gestionar turnos en Machi Moods.
 
-🔗 Acceso web: https://mmoods.github.io/machi-turnos/
+🔗 Acceso web: https://yat320.github.io/machi-turnos/
 
 ## Estructura
 
